@@ -1,0 +1,114 @@
+# ==============================================================================
+# CAMERA SURVEILLANCE & AI OPERATIONS PLATFORM
+# SYSTEM ARCHITECTURE, TECHNICAL SPECIFICATIONS & WORKFLOW KNOWLEDGE BASE
+# (COMPREHENSIVE BILINGUAL: KHMER & ENGLISH)
+# ==============================================================================
+
+[1. SYSTEM OVERVIEW & ARCHITECTURE / អំពីប្រព័ន្ធ និងស្ថាបត្យកម្មទូទៅ]
+- System Name: Agentic Vision & AI Camera Surveillance System
+- System Purpose: ប្រព័ន្ធបញ្ញាសិប្បនិម្មិត (AI Computer Vision) សម្រាប់ភ្ជាប់ជាមួយកាមេរ៉ាសុវត្ថិភាព (CCTV / IP Cameras) ដើម្បីវិភាគរូបភាព តាមដានចលនា ចាប់សកម្មភាព និងផ្ញើការដាស់តឿនដោយស្វ័យប្រវត្តិតាមពេលវេលាជាក់ស្តែង (Real-time Video Analytics & Automated Surveillance)។
+- Core Architecture: Edge-Computing Architecture (ដំណើរការវិភាគលើ Local Edge Device ឬ Local Server ដោយផ្ទាល់ក្នុងបណ្តាញ Local Network)។
+- Video Processing Principle:
+  * ដំណើរការទាញយកវីដេអូបន្តផ្ទាល់ (Live Stream Ingestion) តាមរយៈ RTSP / ONVIF Protocol។
+  * ម៉ាស៊ីន AI (Neural Network Model) ធ្វើការបំបែក Frame និងវិភាគ Object Detection / Pose Estimation / Tracking ក្នុងល្បឿន Real-Time។
+  * មិនបង្ហោះវីដេអូបន្តផ្ទាល់ចូល Cloud សាធារណៈឡើយ ដែលធានានូវសុវត្ថិភាពទិន្នន័យ (100% Data Privacy) និងមិនស៊ីល្បឿនអ៊ីនធឺណិត (Zero Bandwidth Congestion)។
+
+---
+
+[2. SYSTEM WORKFLOW & PIPELINE / លំហូរការងារ និងដំណើរការនៃប្រព័ន្ធ]
+
+លំហូរការងារទាំងមូលចែកចេញជា ៤ ដំណាក់កាលសំខាន់ៗ (End-to-End 4-Stage Pipeline):
+
+1. 📥 **ដំណាក់កាលទី ១: ការទាញយកវីដេអូ (Video Stream Ingestion)**
+   - ប្រព័ន្ធភ្ជាប់ទៅកាន់កាមេរ៉ាសុវត្ថិភាពនីមួយៗតាមរយៈ RTSP URL (ឧទាហរណ៍: `rtsp://admin:password@192.168.1.50:554/stream1`) ឬ ONVIF Protocol។
+   - គាំទ្រទាំងប្រភេទ Sub-stream (សម្រាប់ AI Inference ល្បឿនលឿន) និង Main-stream (សម្រាប់រូបភាពច្បាស់ High-Definition)។
+   - ប្រើប្រាស់បច្ចេកវិទ្យា Media Server (Go2RTC / WebRTC / RTSP Pipeline) សម្រាប់គ្រប់គ្រងខ្សែវីដេអូឱ្យមានស្ថេរភាព និង Low Latency (ក្រោម 0.5 វិនាទី)។
+
+2. 🧠 **ដំណាក់កាលទី ២: ការវិភាគរូបភាពដោយ AI (Edge AI Computer Vision Processing)**
+   - **Object Detection & Classification:** កំណត់អត្តសញ្ញាណមនុស្ស (Persons), យានយន្ត (Vehicles: Cars, Trucks, Motorcycles), និងវត្ថុផ្សេងៗក្នុង Frame នីមួយៗ។
+   - **Multi-Object Tracking (MOT):** តាមដានគន្លងផ្លូវនៃចលនា (Trajectory & Movement Tracking) របស់មនុស្ស ឬយានយន្តនីមួយៗដោយកំណត់ Unique ID ទោះបីជាមានការបាំងបិទមួយភ្លែតក៏ដោយ (Grace Window mechanism)។
+   - **Pose & Activity Estimation:** វិភាគកាយវិការ និងឥរិយាបថ (អង្គុយ, ឈរ, ធ្វើការ, លេងទូរស័ព្ទ, ទំនេរ) ទៅតាមតំបន់កំណត់។
+
+3. 📐 **ដំណាក់កាលទី ៣: ការផ្ទៀងផ្ទាត់តំបន់ និងច្បាប់កំណត់ (Spatial Zone & Rule Engine)**
+   - **Region of Interest (ROI) / Spatial Polygon:** អ្នកប្រើប្រាស់អាចគូសតំបន់ជាក់លាក់លើកញ្ចក់កាមេរ៉ា (ឧទាហរណ៍: តំបន់បញ្ជរគិតលុយ, តំបន់ជួសជុល, តំបន់ឃ្លាំងហាមឃាត់, ផ្លូវចេញ-ចូល)។
+   - **Temporal & Duration Logic:** គណនារយៈពេលនៃវត្តមាន (Dwell Time), រយៈពេលអវត្តមាន (Absence Duration), ឬម៉ោងកំណត់ (Schedule Rules)។
+   - **Event Trigger Validation:** ពិនិត្យលក្ខខណ្ឌ (Events) ដូចជា៖
+     * មនុស្សចូលក្នុងតំបន់ហាមឃាត់ (Intrusion Detection)
+     * គ្មានមនុស្សនៅប្រចាំការលើសពីពេលកំណត់ (Absence / Unattended Alert)
+     * មនុស្សឈរប្រមូលផ្តុំ ឬរង់ចាំយូរខុសប្រក្រតី (Loitering & Queue Alert)
+     * ការវាស់ស្ទង់ពេលវេលាបំពេញការងារជាក់ស្តែង (Active Work Time vs Idle Time)
+
+4. 📲 **ដំណាក់កាលទី ៤: ការផ្ញើសារដាស់តឿន និងបង្ហាញរបាយការណ៍ (Alert Dispatch & Dashboard)**
+   - **Instant Telegram Alert:** បង្កើតសារដាស់តឿនភ្លាមៗ (< 1-2 វិនាទី) ភ្ជាប់ជាមួយរូបភាព Snapshot ភស្តុតាងជាក់ស្តែង និង Timestamp បញ្ជូនទៅកាន់ Telegram របស់អ្នកគ្រប់គ្រង។
+   - **Live HUD / Overwatch Dashboard:** បង្ហាញផ្ទាំងបញ្ជាបន្តផ្ទាល់តាមរយៈ WebRTC HUD សម្រាប់មើលកាមេរ៉ាទាំងអស់ ស្ថានភាពតំបន់ (Zones) និងស្ថានភាពមនុស្ស/យានយន្ត។
+   - **Event Logging & Daily Metrics:** កត់ត្រារាល់ព្រឹត្តិការណ៍ចូលទៅកាន់ Database សម្រាប់ទាញយកស្ថិតិ ម៉ោងធ្វើការ ឬរបាយការណ៍សង្ខេប។
+
+---
+
+[3. CAMERA COMPATIBILITY & PROTOCOLS / ភាពត្រូវគ្នានៃកាមេរ៉ា និងពិធីការតភ្ជាប់]
+
+- **Supported Protocols (ពិធីការដែលគាំទ្រ):**
+  * RTSP (Real-Time Streaming Protocol)
+  * ONVIF (Profile S / G / T)
+  * HTTP / HLS / WebRTC Streams
+  * Direct USB / Webcams / Virtual Video Streams
+- **Supported Camera Brands (ម៉ាកកាមេរ៉ាដែលប្រើប្រាស់បាន):**
+  * Hikvision, Dahua, Uniview (UNV), Tiandy
+  * TP-Link Tapo, Ezviz, Imou, Reolink
+  * គ្រប់កាមេរ៉ា IP Camera, NVR (Network Video Recorder), DVR ឬ CCTV ទាំងអស់ដែលមានមុខងារ RTSP/ONVIF។
+- **Network Requirements (តម្រូវការបណ្តាញ):**
+  * កាមេរ៉ា និងម៉ាស៊ីនដំណើរការ AI ស្ថិតក្នុងបណ្តាញ Local Area Network (LAN/Wi-Fi) តែមួយ ឬភ្ជាប់តាមរយៈ VPN / Static Subnet។
+  * មិនតម្រូវឱ្យកាមេរ៉ាមាន Public Static IP ឡើយ (ដំណើរការលើ Local IP ធម្មតា ឧ. 192.168.1.x)។
+
+---
+
+[4. CORE AI DETECTION CAPABILITIES / សមត្ថភាព និងមុខងារ AI សំខាន់ៗ]
+
+1. 👥 **Human & Presence Detection (ការចាប់មនុស្ស និងវត្តមាន):**
+   - កំណត់អត្តសញ្ញាណមនុស្ស ចំនួនមនុស្ស និងវត្តមានក្នុងតំបន់នីមួយៗ។
+   - Biometric Face Verification ឬ Two-Factor Attendance (Face ID + Local Wi-Fi presence)។
+2. 🚗 **Vehicle & Asset Tracking (ការចាប់យានយន្ត និងទ្រព្យសម្បត្តិ):**
+   - ចាប់រថយន្ត ម៉ូតូ និងយានយន្តគ្រប់ប្រភេទក្នុងតំបន់ចត ឬកន្លែងជួសជុល។
+   - កំណត់ចំណាំរយៈពេលដែលយានយន្តស្ថិតក្នុងតំបន់នីមួយៗ (Bay Occupancy Duration)។
+3. 🛑 **Restricted Area & Intrusion Alert (ការការពារតំបន់ហាមឃាត់):**
+   - គូសបន្ទាត់ព្រំដែន (Virtual Tripwire / Virtual Fence) ឬតំបន់ហាមឃាត់ (Restricted Polygon)។
+   - ផ្ញើសារ Alert ភ្លាមៗពេលមានមនុស្ស ឬយានយន្តឆ្លងកាត់ចូលតំបន់ហាមឃាត់។
+4. ⏱️ **Dwell Time, Loitering & Queue Monitoring (ការវាស់ពេលវេលា និងជួររង់ចាំ):**
+   - វាស់ស្ទង់ពេលវេលាដែលមនុស្សម្នាក់ ឬក្រុមមនុស្សឈរនៅកន្លែងណាមួយ (Dwell Time)។
+   - ដាស់តឿនពេលមានការប្រមូលផ្តុំយូរ (Loitering) ឬអតិថិជនឈរតម្រង់ជួរយូរ។
+5. ⚠️ **Absence / Unattended Station Detection (ការដាស់តឿនពេលគ្មានអ្នកប្រចាំការ):**
+   - តាមដានបញ្ជរសំខាន់ៗ (ឧ. Cashier, Reception, Security Post)។
+   - ប្រសិនបើគ្មានវត្តមានបុគ្គលិកលើសពីពេលវេលាកំណត់ (ឧ. លើសពី ២-៣ នាទី) ប្រព័ន្ធនឹងដាស់តឿនភ្លាមៗ។
+
+---
+
+[5. DATA PRIVACY, SECURITY & HARDWARE / សុវត្ថិភាពទិន្នន័យ និងតម្រូវការផ្នែករឹង]
+
+- **100% Local Processing & Privacy:**
+  * ការវិភាគ AI ទាំងអស់ត្រូវបានធ្វើឡើងនៅលើ Edge Device ក្នុងបរិវេណផ្ទាល់។
+  * គ្មានការបញ្ជូនខ្សែវីដេអូបន្តផ្ទាល់ (Raw Video Stream) ចេញទៅខាងក្រៅអ៊ីនធឺណិតឡើយ។
+  * មានតែព្រឹត្តិការណ៍ជាក់លាក់ (Event Metadata + Alert Snapshot) ប៉ុណ្ណោះដែលត្រូវបានបញ្ជូនទៅកាន់ Telegram របស់អ្នកគ្រប់គ្រង។
+- **Recommended Hardware Requirements (តម្រូវការកុំព្យូទ័រដំណើរការ):**
+  * **CPU:** Intel Core i5 / i7 (Gen 8 ឡើងទៅ) ឬ AMD Ryzen 5 / 7
+  * **RAM:** 8GB – 16GB
+  * **GPU (Optional for High-Performance):** NVIDIA GPU (GTX 1650, RTX 3050, RTX 4060 ឬខ្ពស់ជាងនេះ) គាំទ្រ CUDA Acceleration សម្រាប់ដំណើរការកាមេរ៉ាច្រើនក្នុងពេលតែមួយ។
+  * **OS:** Windows 10/11, Ubuntu Linux, ឬ Debian-based Linux environments។
+
+---
+
+[6. BILINGUAL FAQ / សំណួរ និងចម្លើយទូទៅអំពីប្រព័ន្ធ (KHMER & ENGLISH)]
+
+Q1: តើប្រព័ន្ធ AI ដំណើរការលើកាមេរ៉ាយ៉ាងដូចម្តេច? (How does the AI work on cameras?)
+A1: ប្រព័ន្ធទាញយកខ្សែវីដេអូបន្តផ្ទាល់ (RTSP Video Stream) ពីកាមេរ៉ារបស់លោកអ្នកតាមបណ្តាញ Local Network ហើយបញ្ជូនទៅកាន់ម៉ាស៊ីន AI Engine (YOLO Neural Network) លើ Edge Computer ដើម្បីវិភាគមនុស្ស យានយន្ត ចលនា និងសកម្មភាពក្នុងពេលជាក់ស្តែង។
+
+Q2: តើកាមេរ៉ាប្រភេទណាខ្លះដែលអាចភ្ជាប់ជាមួយប្រព័ន្ធបាន? (What cameras are compatible?)
+A2: គ្រប់កាមេរ៉ា IP Camera, NVR, DVR ឬ CCTV ណាដែលមានមុខងារបញ្ចេញ RTSP ឬ ONVIF Stream សុទ្ធតែអាចភ្ជាប់បានទាំងអស់ ដូចជា Hikvision, Dahua, Uniview, TP-Link Tapo, Ezviz, Imou និង Webcams ដោយមិនចាំបាច់ទិញកាមេរ៉ាថ្មីឡើយ។
+
+Q3: តើប្រព័ន្ធត្រូវការភ្ជាប់អ៊ីនធឺណិតរហូតដែរឬទេ? (Does it require constant Internet?)
+A3: ការវិភាគរូបភាព និងដំណើរការ AI ទាំងអស់គឺដំណើរការលើ Local Network (Off-line / Edge) មិនត្រូវការអ៊ីនធឺណិតដើម្បីដំណើរការឡើយ។ អ៊ីនធឺណិតត្រូវបានប្រើប្រាស់តែមួយគត់នៅពេលដែលប្រព័ន្ធត្រូវផ្ញើសារដាស់តឿន (Telegram Alerts) មកកាន់ទូរស័ព្ទរបស់អ្នកគ្រប់គ្រង។
+
+Q4: តើប្រព័ន្ធផ្ញើការដាស់តឿន (Alerts) តាមរបៀបណា? (How are alerts sent?)
+A4: នៅពេលមានព្រឹត្តិការណ៍កើតឡើង (ដូចជា មានមនុស្សចូលតំបន់ហាមឃាត់ ឬគ្មានអ្នកប្រចាំការនៅបញ្ជរ) ប្រព័ន្ធនឹងផ្ញើសារដាស់តឿនភ្លាមៗ (< 2 វិនាទី) ទៅកាន់ Telegram របស់អ្នកគ្រប់គ្រង ភ្ជាប់ជាមួយរូបភាព Snapshot និងព័ត៌មានលម្អិតនៃពេលវេលា។
+
+Q5: តើទិន្នន័យវីដេអូមានសុវត្ថិភាពកម្រិតណា? (How secure is the video data?)
+A5: ធានាសុវត្ថិភាព ១០០% ព្រោះខ្សែវីដេអូទាំងមូលដំណើរការ និងរក្សាទុកនៅលើកុំព្យូទ័រក្នុងអាគារផ្ទាល់ ដោយមិនត្រូវបានបង្ហោះទៅកាន់ Cloud ឬ Server របស់ភាគីទីបីណាមួយឡើយ។
