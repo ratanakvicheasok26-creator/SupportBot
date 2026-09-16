@@ -1,6 +1,8 @@
+import os
 import asyncio
 import logging
 import sys
+from aiohttp import web
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -17,6 +19,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger("CustomerBot")
 
+async def handle_health(request):
+    """Health check endpoint for Render / Cloud hosting."""
+    return web.Response(text="InboundSupportBot is running 24/7!", status=200)
+
+async def start_web_server():
+    """Starts a minimal background HTTP server to satisfy free cloud hosting requirements."""
+    app = web.Application()
+    app.router.add_get("/", handle_health)
+    app.router.add_get("/health", handle_health)
+    
+    port = int(os.environ.get("PORT", 8080))
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+    logger.info(f"🌐 Cloud Health Check Web Server running on port {port}")
+
 async def main():
     if not BOT_TOKEN or BOT_TOKEN == "your_telegram_bot_token_here":
         logger.error(
@@ -29,6 +48,12 @@ async def main():
         print("3. Put your Chat ID from @userinfobot in ADMIN_CHAT_ID.")
         print("="*50 + "\n")
         return
+
+    # Start Cloud Health Server (Runs alongside Telegram Bot)
+    try:
+        await start_web_server()
+    except Exception as e:
+        logger.warning(f"Could not start web server on port: {e}")
 
     # Initialize SQLite database
     logger.info("Initializing database...")
